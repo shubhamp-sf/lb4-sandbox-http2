@@ -1,38 +1,11 @@
 import {inject} from '@loopback/core';
-import {
-  Request,
-  RestBindings,
-  get,
-  response,
-  ResponseObject,
-} from '@loopback/rest';
-
-/**
- * OpenAPI response for ping()
- */
-const PING_RESPONSE: ResponseObject = {
-  description: 'Ping Response',
-  content: {
-    'application/json': {
-      schema: {
-        type: 'object',
-        title: 'PingResponse',
-        properties: {
-          greeting: {type: 'string'},
-          date: {type: 'string'},
-          url: {type: 'string'},
-          headers: {
-            type: 'object',
-            properties: {
-              'Content-Type': {type: 'string'},
-            },
-            additionalProperties: true,
-          },
-        },
-      },
-    },
-  },
-};
+import {get, Request, response, RestBindings} from '@loopback/rest';
+import fs from 'fs';
+import path from 'path';
+const jsonData = fs.readFileSync(
+  path.resolve(__dirname, '..', '..', 'public', 'data', 'data-big.json'),
+  'utf-8',
+);
 
 /**
  * A simple controller to bounce back http requests
@@ -42,14 +15,9 @@ export class PingController {
 
   // Map to `GET /ping`
   @get('/ping')
-  @response(200, PING_RESPONSE)
-  ping(): object {
+  @response(200)
+  ping(): string {
     // Reply with a greeting, the current time, the url, and request headers
-    return {
-      greeting: 'Hello from LoopBack',
-      date: new Date(),
-      url: this.req.url,
-      headers: Object.assign({}, this.req.headers),
-    };
+    return jsonData;
   }
 }
