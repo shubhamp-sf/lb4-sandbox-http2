@@ -20,9 +20,8 @@ export class Http2SendProvider implements Provider<Http2Send> {
   }
 
   action(response: Response, result: OperationRetval) {
-    console.log('Result', response, result);
-    if (!response.headersSent) {
-      response.send(result);
-    }
+    // console.log('Result', response, result);
+    console.log(result);
+    response.send(result);
   }
 }

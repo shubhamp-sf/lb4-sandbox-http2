@@ -9,7 +9,7 @@ import {
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
-import {Http2SendProvider} from './services';
+import {Http2RejectProvider, Http2SendProvider} from './services';
 
 export {ApplicationConfig};
 
@@ -26,6 +26,9 @@ export class DefaultAppApplication extends BootMixin(
     this.static('/', path.join(__dirname, '../public'));
 
     this.bind(RestBindings.SequenceActions.SEND).toProvider(Http2SendProvider);
+    this.bind(RestBindings.SequenceActions.REJECT).toProvider(
+      Http2RejectProvider,
+    );
 
     // Customize @loopback/rest-explorer configuration here
     this.configure(RestExplorerBindings.COMPONENT).to({
