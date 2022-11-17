@@ -1,6 +1,8 @@
 import {BindingScope, inject, injectable, Provider} from '@loopback/core';
 import {OperationRetval, Request, Response, RestBindings} from '@loopback/rest';
+import debugFactory from 'debug';
 
+const debug = debugFactory('http2:send:provider');
 /*
  * Fix the service type. Possible options can be:
  * - import {Http2Send} from 'your-module';
@@ -20,8 +22,27 @@ export class Http2SendProvider implements Provider<Http2Send> {
   }
 
   action(response: Response, result: OperationRetval) {
-    // console.log('Result', response, result);
-    console.log(result);
-    response.send(result);
+    if (result === response || response.headersSent) {
+      debug('✅ result === response || response.headersSent');
+      return;
+    }
+    if (result === undefined) {
+      // response.send(Reflect.ownKeys(response));
+      response.end();
+    } else {
+      response.send(result);
+    }
+
+    /*
+
+    debug('response.headersSent: ', response.headersSent);
+
+    if (result === undefined) {
+      // response.send(Reflect.ownKeys(response));
+      response.end();
+    } else {
+      debug('Result', result);
+      // response.send(response || result);
+    } */
   }
 }

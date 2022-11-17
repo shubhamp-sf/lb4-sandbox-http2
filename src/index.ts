@@ -1,5 +1,5 @@
+import * as dotEnv from 'dotenv';
 import {ApplicationConfig, DefaultAppApplication} from './application';
-
 export * from './application';
 
 export async function main(options: ApplicationConfig = {}) {
@@ -15,6 +15,7 @@ export async function main(options: ApplicationConfig = {}) {
 }
 
 if (require.main === module) {
+  dotEnv.config();
   // Run the application
   const config = {
     rest: {

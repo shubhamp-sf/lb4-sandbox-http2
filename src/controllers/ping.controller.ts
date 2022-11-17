@@ -16,13 +16,14 @@ export class PingController {
     @inject(RestBindings.Http.RESPONSE) private res: Response,
   ) {}
 
-  // Map to `GET /ping`
+  // HTTP2 ✅
   @get('/ping')
   @response(200)
   ping(): string {
     return jsonData;
   }
 
+  // HTTP2 ✅
   @get('/pong')
   @response(200)
   pong() {
