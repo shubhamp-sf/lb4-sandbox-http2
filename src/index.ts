@@ -2,14 +2,38 @@ import * as dotEnv from 'dotenv';
 import {ApplicationConfig, DefaultAppApplication} from './application';
 export * from './application';
 
+import {Response} from '@loopback/rest';
+import fs from 'fs';
+import http2 from 'http2';
+import path from 'path';
+import {requestAdapter} from './utils/request-adapter';
+import {responseAdapter} from './utils/response-adapter';
+
 export async function main(options: ApplicationConfig = {}) {
+  // create http2 server
+  const server = http2.createSecureServer({
+    key: fs.readFileSync(
+      path.join(__dirname, '..', 'keys', 'localhost-privkey.pem'),
+    ),
+    cert: fs.readFileSync(
+      path.join(__dirname, '..', 'keys', 'localhost-cert.pem'),
+    ),
+  });
+
+  options.rest.listenOnStart = false;
+
   const app = new DefaultAppApplication(options);
   await app.boot();
   await app.start();
 
-  const url = app.restServer.url;
-  console.log(`Server is running at ${url}`);
-  console.log(`Try ${url}/ping`);
+  server.on('request', (req, res) => {
+    console.log('HTTP2 Requested ->', req.headers[':path']);
+    app.requestHandler(requestAdapter(req), responseAdapter(res) as Response);
+  });
+
+  server.listen({port: 8443}, () => {
+    console.log('Listening on https://localhost:8443/');
+  });
 
   return app;
 }
