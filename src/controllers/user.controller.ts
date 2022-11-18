@@ -26,6 +26,7 @@ export class UserController {
     public userRepository: UserRepository,
   ) {}
 
+  // HTTP2 ⌛ (req.body isn't parsed)
   @post('/users')
   @response(200, {
     description: 'User model instance',
@@ -47,6 +48,7 @@ export class UserController {
     return this.userRepository.create(user);
   }
 
+  // HTTP2 ✅
   @get('/users/count')
   @response(200, {
     description: 'User model count',
@@ -73,6 +75,7 @@ export class UserController {
     return this.userRepository.find(filter);
   }
 
+  // HTTP2 ⌛
   @patch('/users')
   @response(200, {
     description: 'User PATCH success count',
@@ -92,6 +95,7 @@ export class UserController {
     return this.userRepository.updateAll(user, where);
   }
 
+  // HTTP2 ✅
   @get('/users/{id}')
   @response(200, {
     description: 'User model instance',
@@ -108,6 +112,7 @@ export class UserController {
     return this.userRepository.findById(id, filter);
   }
 
+  // HTTP2 ⌛
   @patch('/users/{id}')
   @response(204, {
     description: 'User PATCH success',
@@ -126,6 +131,7 @@ export class UserController {
     await this.userRepository.updateById(id, user);
   }
 
+  // HTTP2 ⌛
   @put('/users/{id}')
   @response(204, {
     description: 'User PUT success',
@@ -137,6 +143,7 @@ export class UserController {
     await this.userRepository.replaceById(id, user);
   }
 
+  // HTTP2 ⌛
   @del('/users/{id}')
   @response(204, {
     description: 'User DELETE success',

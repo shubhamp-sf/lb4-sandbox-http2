@@ -29,4 +29,12 @@ export class PingController {
   pong() {
     this.res.send('pong');
   }
+
+  // HTTP2 ⌛ (req.body isn't parsed)
+  @get('/ding')
+  @response(200)
+  ding() {
+    console.log('this.req.body', this.req.body);
+    this.res.send('dong');
+  }
 }

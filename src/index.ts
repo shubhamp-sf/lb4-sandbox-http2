@@ -11,7 +11,7 @@ import {responseAdapter} from './utils/response-adapter';
 
 export async function main(options: ApplicationConfig = {}) {
   // create http2 server
-  const server = http2.createSecureServer({
+  const h2Server = http2.createSecureServer({
     key: fs.readFileSync(
       path.join(__dirname, '..', 'keys', 'localhost-privkey.pem'),
     ),
@@ -26,12 +26,55 @@ export async function main(options: ApplicationConfig = {}) {
   await app.boot();
   await app.start();
 
-  server.on('request', (req, res) => {
+  h2Server.on('request', (req, res) => {
+    console.log('on request');
     console.log('HTTP2 Requested ->', req.headers[':path']);
-    app.requestHandler(requestAdapter(req), responseAdapter(res) as Response);
+
+    let body = '';
+    const handleData = (chunk: Buffer | string) => {
+      body += chunk;
+      // TODO: handle large chunk size
+    };
+    const handleEnd = (err: Error) => {
+      app.requestHandler(
+        requestAdapter(req, body),
+        responseAdapter(res) as Response,
+      );
+      if (err !== undefined) {
+        res.statusCode = 400;
+        res.write('Error' + err.message || err.toString());
+        res.end();
+        return;
+      }
+    };
+
+    req.stream.addListener('data', handleData);
+    req.stream.addListener('end', handleEnd);
+    req.stream.addListener('error', handleEnd);
   });
 
-  server.listen({port: 8443}, () => {
+  /* h2Server.on('stream', (stream, requestHeaders) => {
+    console.log('on stream');
+    stream.respond({
+      ':status': 200,
+      'content-type': 'text/plain',
+    });
+
+    stream.on('data', chunk => {
+      console.log('Received data: ', chunk.toString());
+      // stream.write(data); // echo received data back
+    });
+
+    stream.on('close', () => {
+      console.log('stream closed');
+    });
+
+    stream.on('end', () => {
+      console.log('stream end');
+    });
+  }); */
+
+  h2Server.listen({port: 8443}, () => {
     console.log('Listening on https://localhost:8443/');
   });
 
