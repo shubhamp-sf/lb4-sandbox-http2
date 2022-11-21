@@ -1,3 +1,4 @@
+import {inject} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -14,8 +15,10 @@ import {
   patch,
   post,
   put,
+  Request,
   requestBody,
   response,
+  RestBindings,
 } from '@loopback/rest';
 import {User} from '../models';
 import {UserRepository} from '../repositories';
@@ -24,6 +27,7 @@ export class UserController {
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
+    @inject(RestBindings.Http.REQUEST) private req: Request,
   ) {}
 
   // HTTP2 ⌛ (req.body isn't parsed)
@@ -44,7 +48,9 @@ export class UserController {
       },
     })
     user: Omit<User, 'id'>,
-  ): Promise<User> {
+  ) /* : Promise<User> */ {
+    console.log(user, this.req.body);
+    // return user;
     return this.userRepository.create(user);
   }
 

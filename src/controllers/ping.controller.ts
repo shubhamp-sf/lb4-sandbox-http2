@@ -1,5 +1,12 @@
 import {inject} from '@loopback/core';
-import {get, Request, Response, response, RestBindings} from '@loopback/rest';
+import {
+  get,
+  post,
+  Request,
+  Response,
+  response,
+  RestBindings,
+} from '@loopback/rest';
 import fs from 'fs';
 import path from 'path';
 const jsonData = fs.readFileSync(
@@ -31,7 +38,7 @@ export class PingController {
   }
 
   // HTTP2 ⌛ (req.body isn't parsed)
-  @get('/ding')
+  @post('/ding')
   @response(200)
   ding() {
     console.log('this.req.body', this.req.body);

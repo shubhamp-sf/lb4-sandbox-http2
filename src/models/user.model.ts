@@ -16,6 +16,7 @@ export class User extends Entity {
 
   @property({
     type: 'string',
+    required: true,
   })
   email?: string;
 
@@ -28,7 +29,6 @@ export class User extends Entity {
     type: 'boolean',
   })
   active?: boolean;
-
 
   constructor(data?: Partial<User>) {
     super(data);
